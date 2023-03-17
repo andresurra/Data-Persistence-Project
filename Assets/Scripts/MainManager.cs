@@ -10,6 +10,7 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text BestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -22,6 +23,7 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        LoadBestScore();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -59,18 +61,33 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            //If click ESC goes to Menu
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene("menu");
+            }
         }
     }
 
     void AddPoint(int point)
     {
         m_Points += point;
+        //$ dollar sign means to concatenate multiple variable in strings
         ScoreText.text = $"Score : {m_Points}";
     }
 
     public void GameOver()
     {
+        //Send Information about Score
+        DataManager.Instance.SetLastScore(m_Points);
+        //Load Player Name and Score if it's better
+        LoadBestScore();
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    private void LoadBestScore()
+    {
+        BestScoreText.text = $"Best score: {DataManager.Instance.GetBestPlayer()} - {DataManager.Instance.GetBestScore()}";
     }
 }
